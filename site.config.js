@@ -4,9 +4,11 @@
 export const siteConfig = {
   siteUrl: "", // e.g. "https://www.example.com" once there is a domain
   firebase: {
-    apiKey: "",
-    authDomain: "",
-    projectId: "",
-    appId: "",
+    apiKey: "AIzaSyDBqDyJkeGD7VBcT2BHHvMFZKNzLPrLT-o",
+    authDomain: "ps-anne-wang-ombe.firebaseapp.com",
+    projectId: "ps-anne-wang-ombe",
+    storageBucket: "ps-anne-wang-ombe.firebasestorage.app",
+    messagingSenderId: "737289930172",
+    appId: "1:737289930172:web:93084714437571895c17b9",
   },
 };
