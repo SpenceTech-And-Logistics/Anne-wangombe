@@ -103,6 +103,19 @@ export const awardsConfig = {
     { key: 'year', label: 'Year' },
     { key: 'status', label: 'Status', render: badge },
   ],
+  importer: {
+    columns: ['title', 'body', 'year', 'description', 'url'],
+    example: ['Ranked 9th among Principal Secretaries', 'Politrack Africa', '2024', 'One line on the award.', 'https://example.com/report'],
+    map: (r) => ({
+      title: String(r.title || '').trim(),
+      body: String(r.body || ''),
+      year: String(r.year || ''),
+      description: String(r.description || ''),
+      url: String(r.url || ''),
+      photo: '',
+      status: 'published',
+    }),
+  },
 }
 
 export const pressConfig = {
