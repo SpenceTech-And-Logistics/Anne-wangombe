@@ -12,7 +12,7 @@ export default function About() {
 
       <section className="wrap section-tight">
         <div className="split">
-          <Reveal variant="left"><Portrait badge /></Reveal>
+          <Reveal variant="left"><Portrait badge variant="about" /></Reveal>
           <Reveal variant="right" className="prose">
             {profile.bio.map((p, i) => <p key={i}>{p}</p>)}
             {profile.outside && <p>{profile.outside}</p>}

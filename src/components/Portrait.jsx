@@ -2,14 +2,19 @@ import { useRef } from 'react'
 import { useScroll } from '../lib/hooks.js'
 import { useContent } from '../lib/useContent.js'
 
-// Drop portrait.jpg (or .png / .webp) into src/assets/images and it is used automatically.
-const files = import.meta.glob('../assets/images/portrait.*', { eager: true, query: '?url', import: 'default' })
-const bundled = Object.values(files)[0] || ''
+// Drop portrait.jpg (home page) and about.jpg (About page) into src/assets/images and they are used automatically.
+// Each also accepts .png / .webp. Photos uploaded from the dashboard take priority.
+const first = (files) => Object.values(files)[0] || ''
+const bundled = {
+  home: first(import.meta.glob('../assets/images/portrait.*', { eager: true, query: '?url', import: 'default' })),
+  about: first(import.meta.glob('../assets/images/about.*', { eager: true, query: '?url', import: 'default' })),
+}
 
-export default function Portrait({ className = '', parallax = true, eager = false, badge = false }) {
+export default function Portrait({ className = '', parallax = true, eager = false, badge = false, variant = 'home' }) {
   const { profile } = useContent()
   const ref = useRef(null)
-  const src = profile.photo || bundled
+  // The About photo falls back to the home portrait, so the page never goes blank.
+  const src = variant === 'about' ? profile.aboutPhoto || bundled.about || profile.photo || bundled.home : profile.photo || bundled.home
 
   useScroll((y) => {
     if (!parallax || !ref.current) return
