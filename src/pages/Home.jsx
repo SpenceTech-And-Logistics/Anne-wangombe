@@ -15,7 +15,12 @@ export default function Home() {
         <div className="blob b1" aria-hidden="true" /><div className="blob b2" aria-hidden="true" /><div className="blob b3" aria-hidden="true" />
         <div className="wrap hero-in">
           <div>
-            <span className="chip-label rise" style={{ '--d': '0ms' }}>{profile.role}</span>
+            <span className="chip-label rise" style={{ '--d': '0ms' }}>Current position</span>
+            <p className="hero-post rise" style={{ '--d': '60ms' }}>
+              <b>{profile.role}</b>
+              {profile.department && <span>{profile.department}</span>}
+              {profile.ministry && <small>{profile.ministry}</small>}
+            </p>
             <h1 className="rise" style={{ '--d': '120ms' }}>
               {profile.firstName}
               <br />
