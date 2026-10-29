@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { getDb } from '../../lib/firebase.js'
 import { csvTemplate, readRecords, saveText } from '../../lib/importer.js'
+import { resizeImage } from '../../lib/media.js'
 import { useContent } from '../../lib/useContent.js'
 import { Field } from './Fields.jsx'
 
 /**
  * A list of records (projects, news, gallery) with add, edit, delete and optional import from CSV or JSON.
- * Props: coll, title, blurb, noun, fields, columns, empty, importer?: { columns, example, map }
+ * Props: coll, title, blurb, noun, fields, columns, empty, importer?: { columns, example, map },
+ * bulk?: { categories, make(src, caption, category) } for dropping many photos at once.
  */
-export default function CollectionEditor({ coll, title, blurb, noun, fields, columns, empty, importer }) {
+export default function CollectionEditor({ coll, title, blurb, noun, fields, columns, empty, importer, bulk }) {
   const { refresh } = useContent()
   const [items, setItems] = useState(null)
   const [editing, setEditing] = useState(null) // null | 'new' | id
@@ -17,6 +19,9 @@ export default function CollectionEditor({ coll, title, blurb, noun, fields, col
   const [busy, setBusy] = useState(false)
   const [confirm, setConfirm] = useState('')
   const fileRef = useRef(null)
+  const bulkRef = useRef(null)
+  const [bulkCat, setBulkCat] = useState(bulk?.categories?.[0] || '')
+  const [drag, setDrag] = useState(false)
 
   const load = useCallback(async () => {
     const { fs, db } = await getDb()
@@ -119,6 +124,43 @@ export default function CollectionEditor({ coll, title, blurb, noun, fields, col
     setBusy(false)
   }
 
+  // Turns "IMG_2041 rescue-centre_launch.jpg" into "Rescue centre launch".
+  const captionFrom = (name) => {
+    const t = name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').replace(/\b(img|dsc|pxl|wa|whatsapp image)\b\s*\d*/gi, '').replace(/\s+/g, ' ').trim()
+    // Camera and WhatsApp names (dates, numbers) give no useful caption.
+    return /[a-z]{3,}/i.test(t.replace(/\bat\b/gi, '')) ? t.charAt(0).toUpperCase() + t.slice(1) : ''
+  }
+
+  async function doBulk(fileList) {
+    const files = [...fileList].filter((f) => f.type.startsWith('image/'))
+    if (!files.length) return setMsg({ bad: true, text: 'No photos found. Choose JPG, PNG or WebP files.' })
+    setBusy(true)
+    let done = 0
+    const failed = []
+    try {
+      const { fs, db } = await getDb()
+      for (const f of files) {
+        setMsg({ text: `Uploading ${done + 1} of ${files.length}: ${f.name}` })
+        try {
+          const src = await resizeImage(f, 1400, 0.72)
+          await fs.addDoc(fs.collection(db, coll), { ...bulk.make(src, captionFrom(f.name), bulkCat), createdAt: fs.serverTimestamp() })
+          done++
+        } catch {
+          failed.push(f.name)
+        }
+      }
+      await reload()
+      setMsg(
+        failed.length
+          ? { bad: true, text: `Uploaded ${done} of ${files.length}. These could not be read: ${failed.join(', ')}.` }
+          : { text: `Uploaded ${done} photo${done === 1 ? '' : 's'}. They are live in the Gallery. Click Edit on any of them to add a caption.` },
+      )
+    } catch (ex) {
+      setMsg({ bad: true, text: ex.message })
+    }
+    setBusy(false)
+  }
+
   const visible = (f) => !f.showIf || f.showIf(form)
 
   return (
@@ -136,6 +178,31 @@ export default function CollectionEditor({ coll, title, blurb, noun, fields, col
           <button type="button" className="adm-btn" onClick={startNew}>Add {noun.toLowerCase()}</button>
         </div>
       </div>
+
+      {bulk && (
+        <div
+          className={`adm-panel adm-drop ${drag ? 'is-over' : ''}`}
+          onDragOver={(e) => { e.preventDefault(); setDrag(true) }}
+          onDragLeave={() => setDrag(false)}
+          onDrop={(e) => { e.preventDefault(); setDrag(false); if (!busy) doBulk(e.dataTransfer.files) }}
+        >
+          <div>
+            <h2>Upload many photos at once</h2>
+            <p>Drag a whole folder of photos here, or choose them. Each becomes its own Gallery item, resized automatically. Captions come from the file names.</p>
+          </div>
+          <div className="adm-actions">
+            {bulk.categories && (
+              <label className="adm-inline">Category
+                <select value={bulkCat} onChange={(e) => setBulkCat(e.target.value)}>
+                  {bulk.categories.map((c) => <option key={c}>{c}</option>)}
+                </select>
+              </label>
+            )}
+            <button type="button" className="adm-btn" onClick={() => bulkRef.current?.click()} disabled={busy}>{busy ? 'Uploading…' : 'Choose photos'}</button>
+            <input ref={bulkRef} type="file" accept="image/*" multiple hidden onChange={(e) => { const fl = e.target.files; doBulk(fl).finally(() => { e.target.value = '' }) }} />
+          </div>
+        </div>
+      )}
 
       {msg && <p className={msg.bad ? 'adm-alert' : 'adm-ok'} role="status">{msg.text}</p>}
 

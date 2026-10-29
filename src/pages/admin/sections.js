@@ -189,6 +189,10 @@ export const eventsConfig = {
 
 export const galleryConfig = {
   coll: 'gallery',
+  bulk: {
+    categories: GALLERY_CATEGORIES,
+    make: (src, title, category) => ({ type: 'photo', title, category, src, url: '', status: 'published' }),
+  },
   title: 'Gallery',
   blurb: 'Standalone photos and videos. Photos from projects, awards, news and events appear here automatically.',
   noun: 'Item',

@@ -70,3 +70,11 @@
 .adm-signin .adm-btn { padding: 15px 24px; font-size: 16px; }
 .adm-signin .adm-link { align-self: flex-start; }
 .adm-uid { display: block; background: #efe9da; padding: 12px; border-radius: 8px; word-break: break-all; user-select: all; }
+
+/* Bulk photo upload */
+.adm-drop { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; border: 2px dashed #d9c3cf; transition: border-color 0.2s, background 0.2s; }
+.adm-drop h2 { margin: 0 0 4px; }
+.adm-drop p { margin: 0; max-width: 560px; color: #6b5a70; }
+.adm-drop.is-over { border-color: #9b2e6b; background: #fff4ec; }
+.adm-inline { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+.adm-inline select { padding: 8px 10px; border-radius: 10px; border: 1px solid #d9c3cf; font: inherit; }
