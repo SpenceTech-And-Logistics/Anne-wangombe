@@ -22,6 +22,7 @@ export const defaults = {
     ],
     sworn: 'Sworn in as Principal Secretary on 4 July 2023',
     photo: '',
+    homeAboutPhoto: '',
     aboutPhoto: '',
     interests: ['Gender equality', "Women's empowerment", 'Affirmative action', 'Ending GBV', 'Capacity building', 'Inclusion'],
     positions: [

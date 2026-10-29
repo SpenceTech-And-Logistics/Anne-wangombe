@@ -15,7 +15,7 @@ npm run build    # output in dist/
 The site ships with built-in content (profile, positions, mandate, initiatives, award and news) taken from the State Department, the National Police Service leadership page, MIGECAH and Kenya News Agency.
 Once Firebase is connected, anything saved in the dashboard replaces the built-in version.
 
-**Photos:** put `portrait.jpg` (home page) and `about.jpg` (About page) in `src/assets/images/` (`.png` / `.webp` also work), or upload them from the dashboard (Profile and career: Home page portrait, About page photo). Without an About photo, the About page reuses the portrait.
+**Photos:** put `portrait.jpg` (top of the home page), `home-about.jpg` (About section of the home page) and `about.jpg` (About page) in `src/assets/images/` (`.png` / `.webp` also work), or upload them from the dashboard (Profile and career). Any that are missing fall back: home-about to about to portrait.
 
 ## Firebase setup (free Spark plan, no Storage needed)
 1. Firebase console: create a project, then Build, Firestore Database, create (production mode).

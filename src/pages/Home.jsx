@@ -95,7 +95,7 @@ export default function Home() {
 
       <section className="wrap section-tight">
         <div className="split">
-          <Reveal variant="left"><Portrait parallax={false} variant="about" /></Reveal>
+          <Reveal variant="left"><Portrait parallax={false} variant="homeAbout" /></Reveal>
           <Reveal variant="right" className="prose">
             <span className="chip-label">About</span>
             <h2 className="title" style={{ margin: '14px 0 20px' }}>From the classroom to the <em>Cabinet table</em></h2>
