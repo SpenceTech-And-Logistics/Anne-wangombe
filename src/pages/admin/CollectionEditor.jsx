@@ -181,7 +181,7 @@ export default function CollectionEditor({ coll, title, blurb, noun, fields, col
 
       {bulk && (
         <div
-          className={`adm-panel adm-drop ${drag ? 'is-over' : ''}`}
+          className={`adm-panel adm-bulk ${drag ? 'is-over' : ''}`}
           onDragOver={(e) => { e.preventDefault(); setDrag(true) }}
           onDragLeave={() => setDrag(false)}
           onDrop={(e) => { e.preventDefault(); setDrag(false); if (!busy) doBulk(e.dataTransfer.files) }}
