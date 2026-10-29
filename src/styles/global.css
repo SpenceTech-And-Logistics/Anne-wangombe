@@ -319,3 +319,13 @@ label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-w
   *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; }
   .rv { opacity: 1; transform: none; }
 }
+
+/* Social icon links */
+.social { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 12px; }
+.social a { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; transition: transform 0.25s var(--ease), background 0.25s var(--ease), color 0.25s var(--ease); }
+.social-light a { background: var(--plum); color: var(--gold); }
+.social-light a:hover { background: var(--berry); color: #fff; transform: translateY(-3px) rotate(-6deg); }
+.social-dark a { background: rgba(255, 255, 255, 0.1); color: #fff; }
+.social-dark a:hover { background: var(--gold); color: var(--plum); transform: translateY(-3px) rotate(-6deg); }
+.foot-social { margin-top: 18px; }
+@media (prefers-reduced-motion: reduce) { .social a:hover { transform: none; } }

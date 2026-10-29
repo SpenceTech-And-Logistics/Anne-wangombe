@@ -3,6 +3,7 @@ import PageHead from '../components/PageHead.jsx'
 import { Reveal } from '../components/Reveal.jsx'
 import { firebaseReady, getDb } from '../lib/firebase.js'
 import { useContent } from '../lib/useContent.js'
+import SocialIcons from '../components/SocialIcons.jsx'
 
 const TOPICS = ['Partnership', 'Invitation or event', 'Media request', 'Report a concern', 'Programme enquiry', 'Other']
 
@@ -44,7 +45,8 @@ export default function Contact() {
     ['Email', contact.email],
     ['Phone', contact.phone],
   ]
-  const links = [...(contact.social || []), ...(contact.links || [])].filter((l) => l.url)
+  const social = (contact.social || []).filter((l) => l.url)
+  const links = (contact.links || []).filter((l) => l.url)
 
   return (
     <>
@@ -90,10 +92,11 @@ export default function Contact() {
                 {rows.map(([k, v]) => <div key={k}><dt>{k}</dt><dd className={v ? '' : 'pending'}>{v || 'To be announced'}</dd></div>)}
               </dl>
             </div>
-            {links.length > 0 && (
+            {(social.length > 0 || links.length > 0) && (
               <div className="panel">
                 <h3 style={{ fontSize: 24, marginBottom: 14 }}>Follow and visit</h3>
-                <div className="chips">{links.map((l) => <a key={l.url} className="chip" href={l.url} target="_blank" rel="noreferrer">{l.label || l.url}</a>)}</div>
+                <SocialIcons links={social} />
+                {links.length > 0 && <div className="chips" style={{ marginTop: social.length ? 16 : 0 }}>{links.map((l) => <a key={l.url} className="chip" href={l.url} target="_blank" rel="noreferrer">{l.label || l.url} ↗</a>)}</div>}
               </div>
             )}
           </Reveal>

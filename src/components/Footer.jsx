@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useContent } from '../lib/useContent.js'
+import SocialIcons from './SocialIcons.jsx'
 
 export default function Footer() {
   const { contact } = useContent()
@@ -13,6 +14,7 @@ export default function Footer() {
           <div className="brand brand-light"><span className="seal">AW</span><span className="brand-name">PS Anne Wang&apos;ombe</span></div>
           <p className="foot-blurb">Principal Secretary, {contact.department}.</p>
           {contact.helpline && <p className="foot-help">GBV helpline <b>{contact.helpline}</b></p>}
+          <SocialIcons links={contact.social} tone="dark" className="foot-social" />
         </div>
         <nav className="foot-links" aria-label="Footer">
           <Link to="/about">About</Link>
