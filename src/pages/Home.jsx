@@ -15,18 +15,16 @@ export default function Home() {
         <div className="blob b1" aria-hidden="true" /><div className="blob b2" aria-hidden="true" /><div className="blob b3" aria-hidden="true" />
         <div className="wrap hero-in">
           <div>
-            <span className="chip-label rise" style={{ '--d': '0ms' }}>Current position</span>
-            <p className="hero-post rise" style={{ '--d': '60ms' }}>
-              <b>{profile.role}</b>
-              {profile.department && <span>{profile.department}</span>}
-              {profile.ministry && <small>{profile.ministry}</small>}
-            </p>
             <h1 className="rise" style={{ '--d': '120ms' }}>
               {profile.firstName}
               <br />
               <span className="ul">{profile.lastName}</span>
             </h1>
-            <p className="lead rise" style={{ '--d': '260ms' }}>{profile.intro}</p>
+            <p className="lead rise" style={{ '--d': '260ms' }}>
+              <strong className="lead-post">{[profile.role, profile.department].filter(Boolean).join(', ')}</strong>
+              {profile.ministry ? `, ${profile.ministry}. ` : '. '}
+              {profile.intro}
+            </p>
             <div className="hero-actions rise" style={{ '--d': '380ms' }}>
               <Link to="/mandate" className="btn btn-solid">Our mandate <span className="arr">→</span></Link>
               <Link to="/about" className="btn btn-ghost">About the PS</Link>
