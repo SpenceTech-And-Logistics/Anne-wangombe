@@ -5,6 +5,9 @@ import Portrait from '../components/Portrait.jsx'
 import { formatDate, videoInfo } from '../lib/media.js'
 import { useContent } from '../lib/useContent.js'
 
+// Lets the dashboard text use **double asterisks** for bold.
+const withBold = (text = '') => text.split(/\*\*(.+?)\*\*/g).map((part, i) => (i % 2 ? <strong key={i}>{part}</strong> : part))
+
 const shortDept = (d = '') => d.replace(/^State Department for /i, '')
 
 export default function Home() {
@@ -30,7 +33,7 @@ export default function Home() {
               <br />
               <span className="ul">{profile.lastName}</span>
             </h1>
-            <p className="lead lead-serif rise" style={{ '--d': '260ms' }}>{profile.headline || profile.intro}</p>
+            <p className="lead lead-serif rise" style={{ '--d': '260ms' }}>{withBold(profile.headline || profile.intro)}</p>
             <div className="hero-actions rise" style={{ '--d': '380ms' }}>
               <Link to="/about" className="btn btn-solid">Read her story <span className="arr">→</span></Link>
               <Link to="/projects" className="btn btn-ghost">See her work</Link>

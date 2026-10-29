@@ -12,7 +12,7 @@ export const profileFields = [
   { key: 'department', label: 'State Department' },
   { key: 'ministry', label: 'Ministry' },
   { key: 'sworn', label: 'Appointment line' },
-  { key: 'headline', label: 'Home page introduction', type: 'textarea', wide: true, hint: 'The paragraph under her name. Start with her position.' },
+  { key: 'headline', label: 'Home page introduction', type: 'textarea', wide: true, hint: 'The paragraph under her name. Wrap words in **double asterisks** to make them bold.' },
   { key: 'facts', label: 'Quick facts under the introduction', type: 'list', noun: 'fact', wide: true, fields: [{ key: 'label', label: 'Label (e.g. Current office)' }, { key: 'value', label: 'Value' }] },
   { key: 'bio', label: 'Biography paragraphs', type: 'strings', long: true, wide: true },
   { key: 'outside', label: 'Outside work', type: 'textarea', wide: true },
