@@ -16,7 +16,7 @@ export default function Gallery() {
     const own = gallery.map((g) => {
       if (g.type === 'video') {
         const v = videoInfo(g.url)
-        return { id: g.id, kind: 'video', title: g.title, category: 'Videos', thumb: g.thumb || v.thumb, embed: v.embed, url: g.url }
+        return { id: g.id, kind: 'video', title: g.title, category: 'Videos', thumb: g.thumb || v.thumb, embed: v.embed, file: v.file, url: g.url }
       }
       return { id: g.id, kind: 'photo', title: g.title, category: g.category, src: g.src, thumb: g.src }
     })
@@ -31,7 +31,7 @@ export default function Gallery() {
 
   const cats = ['All', ...new Set(all.map((i) => i.category).filter(Boolean))]
   const shown = cat === 'All' ? all : all.filter((i) => i.category === cat)
-  const viewable = shown.filter((i) => i.kind === 'photo' || i.embed)
+  const viewable = shown.filter((i) => i.kind === 'photo' || i.embed || i.file)
   const move = useCallback((d) => setOpen((i) => (i < 0 ? i : (i + d + viewable.length) % viewable.length)), [viewable.length])
   const close = useCallback(() => setOpen(-1), [])
 

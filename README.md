@@ -38,3 +38,14 @@ npx wrangler deploy
 
 ## Colours
 Dashboard, **Colours**: pick a ready-made scheme or set five colours (main, accent, highlight, gold, background). They are saved to Firestore (`site/theme`) and every other shade on the site is mixed from them in `src/styles/global.css`. The defaults live in `src/lib/theme.js`.
+
+## Video uploads (Cloudflare R2)
+Videos can be added as links (YouTube, Google Drive, Facebook, TikTok) or uploaded directly. Uploads are stored in a Cloudflare R2 bucket and handled by `worker/index.js`, which only accepts uploads from signed-in dashboard administrators.
+
+One-time setup:
+1. Cloudflare dashboard, **R2 Object Storage**: turn R2 on (Cloudflare asks for a card; the first 10 GB of storage and all viewing are free).
+2. Create the bucket: `npx wrangler r2 bucket create anne-wangombe-media` (or in the dashboard, with exactly that name).
+3. Deploy as usual. `wrangler.jsonc` already binds the bucket and sets `FIREBASE_PROJECT_ID`.
+
+Limits: up to 95 MB per video (Cloudflare's free plan caps uploads at 100 MB). Longer videos are better on YouTube. Uploading only works on the deployed site (or `npx wrangler dev`), not on `npm run dev`.
+Deleting a gallery item does not delete its file from R2; remove old files in the R2 dashboard if space matters.

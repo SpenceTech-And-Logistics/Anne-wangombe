@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { getDb } from '../../lib/firebase.js'
 import { csvTemplate, readRecords, saveText } from '../../lib/importer.js'
-import { resizeImage } from '../../lib/media.js'
+import { isVideoFile, resizeImage, uploadVideo, videoThumb } from '../../lib/media.js'
 import { useContent } from '../../lib/useContent.js'
 import { Field } from './Fields.jsx'
 
@@ -132,28 +132,35 @@ export default function CollectionEditor({ coll, title, blurb, noun, fields, col
   }
 
   async function doBulk(fileList) {
-    const files = [...fileList].filter((f) => f.type.startsWith('image/'))
-    if (!files.length) return setMsg({ bad: true, text: 'No photos found. Choose JPG, PNG or WebP files.' })
+    const files = [...fileList].filter((f) => f.type.startsWith('image/') || (bulk.makeVideo && isVideoFile(f)))
+    if (!files.length) return setMsg({ bad: true, text: 'No photos or videos found. Choose JPG, PNG, WebP, MP4, MOV or WebM files.' })
     setBusy(true)
     let done = 0
     const failed = []
     try {
       const { fs, db } = await getDb()
       for (const f of files) {
-        setMsg({ text: `Uploading ${done + 1} of ${files.length}: ${f.name}` })
+        const label = `Uploading ${done + failed.length + 1} of ${files.length}: ${f.name}`
+        setMsg({ text: label })
         try {
-          const src = await resizeImage(f, 1400, 0.72)
-          await fs.addDoc(fs.collection(db, coll), { ...bulk.make(src, captionFrom(f.name), bulkCat), createdAt: fs.serverTimestamp() })
+          let doc
+          if (isVideoFile(f)) {
+            const [url, thumb] = await Promise.all([uploadVideo(f, (p) => setMsg({ text: `${label} (${p}%)` })), videoThumb(f)])
+            doc = bulk.makeVideo(url, thumb, captionFrom(f.name))
+          } else {
+            doc = bulk.make(await resizeImage(f, 1400, 0.72), captionFrom(f.name), bulkCat)
+          }
+          await fs.addDoc(fs.collection(db, coll), { ...doc, createdAt: fs.serverTimestamp() })
           done++
-        } catch {
-          failed.push(f.name)
+        } catch (err) {
+          failed.push(`${f.name} (${err.message})`)
         }
       }
       await reload()
       setMsg(
         failed.length
-          ? { bad: true, text: `Uploaded ${done} of ${files.length}. These could not be read: ${failed.join(', ')}.` }
-          : { text: `Uploaded ${done} photo${done === 1 ? '' : 's'}. They are live in the Gallery. Click Edit on any of them to add a caption.` },
+          ? { bad: true, text: `Uploaded ${done} of ${files.length}. Not uploaded: ${failed.join('; ')}` }
+          : { text: `Uploaded ${done} file${done === 1 ? '' : 's'}. They are live in the Gallery. Click Edit on any of them to add a caption.` },
       )
     } catch (ex) {
       setMsg({ bad: true, text: ex.message })
@@ -187,8 +194,8 @@ export default function CollectionEditor({ coll, title, blurb, noun, fields, col
           onDrop={(e) => { e.preventDefault(); setDrag(false); if (!busy) doBulk(e.dataTransfer.files) }}
         >
           <div>
-            <h2>Upload many photos at once</h2>
-            <p>Drag a whole folder of photos here, or choose them. Each becomes its own Gallery item, resized automatically. Captions come from the file names.</p>
+            <h2>Upload many photos and videos at once</h2>
+            <p>Drag a whole folder here, or choose the files. Each photo or video becomes its own Gallery item. Photos are resized automatically; videos can be up to 95 MB each. Captions come from the file names.</p>
           </div>
           <div className="adm-actions">
             {bulk.categories && (
@@ -198,8 +205,8 @@ export default function CollectionEditor({ coll, title, blurb, noun, fields, col
                 </select>
               </label>
             )}
-            <button type="button" className="adm-btn" onClick={() => bulkRef.current?.click()} disabled={busy}>{busy ? 'Uploading…' : 'Choose photos'}</button>
-            <input ref={bulkRef} type="file" accept="image/*" multiple hidden onChange={(e) => { const fl = e.target.files; doBulk(fl).finally(() => { e.target.value = '' }) }} />
+            <button type="button" className="adm-btn" onClick={() => bulkRef.current?.click()} disabled={busy}>{busy ? 'Uploading…' : 'Choose files'}</button>
+            <input ref={bulkRef} type="file" accept={bulk.makeVideo ? 'image/*,video/mp4,video/quicktime,video/webm,.mp4,.mov,.m4v,.webm' : 'image/*'} multiple hidden onChange={(e) => { const fl = e.target.files; doBulk(fl).finally(() => { e.target.value = '' }) }} />
           </div>
         </div>
       )}
@@ -210,7 +217,7 @@ export default function CollectionEditor({ coll, title, blurb, noun, fields, col
         <form className="adm-panel" onSubmit={save}>
           <h2>{editing === 'new' ? `New ${noun.toLowerCase()}` : `Edit ${noun.toLowerCase()}`}</h2>
           <div className="adm-grid">
-            {fields.filter(visible).map((f) => <Field key={f.key} def={f} value={form[f.key]} onChange={(v) => setForm({ ...form, [f.key]: v })} />)}
+            {fields.filter(visible).map((f) => <Field key={f.key} def={f} value={form[f.key]} onChange={(v) => setForm((cur) => ({ ...cur, [f.key]: v }))} patch={(o) => setForm((cur) => ({ ...cur, ...o }))} />)}
           </div>
           <div className="adm-actions">
             <button className="adm-btn" disabled={busy}>{busy ? 'Saving…' : `Save ${noun.toLowerCase()}`}</button>

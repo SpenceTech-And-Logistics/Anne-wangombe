@@ -192,17 +192,18 @@ export const galleryConfig = {
   bulk: {
     categories: GALLERY_CATEGORIES,
     make: (src, title, category) => ({ type: 'photo', title, category, src, url: '', status: 'published' }),
+    makeVideo: (url, thumb, title) => ({ type: 'video', title, category: '', src: '', url, thumb, status: 'published' }),
   },
   title: 'Gallery',
-  blurb: 'Standalone photos and videos. Photos from projects, awards, news and events appear here automatically.',
+  blurb: 'Standalone photos and videos (links or uploads). Photos from projects, awards, news and events appear here automatically.',
   noun: 'Item',
-  empty: { type: 'photo', title: '', category: GALLERY_CATEGORIES[0], src: '', url: '', status: 'published' },
+  empty: { type: 'photo', title: '', category: GALLERY_CATEGORIES[0], src: '', url: '', thumb: '', status: 'published' },
   fields: [
-    { key: 'type', label: 'Type', type: 'select', options: [{ value: 'photo', label: 'Photo' }, { value: 'video', label: 'Video link' }] },
+    { key: 'type', label: 'Type', type: 'select', options: [{ value: 'photo', label: 'Photo' }, { value: 'video', label: 'Video (link or upload)' }] },
     { key: 'title', label: 'Caption' },
     { key: 'category', label: 'Category', type: 'select', options: GALLERY_CATEGORIES, showIf: (f) => f.type !== 'video' },
     { key: 'src', label: 'Photo', type: 'image', wide: true, showIf: (f) => f.type !== 'video' },
-    { key: 'url', label: 'Video link', type: 'url', wide: true, hint: 'YouTube, Google Drive, Facebook or TikTok. YouTube thumbnails are automatic.', showIf: (f) => f.type === 'video' },
+    { key: 'url', label: 'Video', type: 'video', thumbKey: 'thumb', wide: true, hint: 'YouTube thumbnails are automatic; uploaded videos get a cover picture from the video.', showIf: (f) => f.type === 'video' },
     status,
   ],
   columns: [

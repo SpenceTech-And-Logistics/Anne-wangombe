@@ -5,8 +5,20 @@
   "build": {
     "command": "npm run build"
   },
+  // The Worker handles video uploads (/api/upload) and playback (/media/...); everything else is the static site.
+  "main": "worker/index.js",
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "single-page-application"
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*", "/media/*"]
+  },
+  // Uploaded videos live here. Create it once: npx wrangler r2 bucket create anne-wangombe-media
+  "r2_buckets": [
+    { "binding": "MEDIA", "bucket_name": "anne-wangombe-media" }
+  ],
+  "vars": {
+    // Must match projectId in site.config.js
+    "FIREBASE_PROJECT_ID": "ps-anne-wang-ombe"
   }
 }

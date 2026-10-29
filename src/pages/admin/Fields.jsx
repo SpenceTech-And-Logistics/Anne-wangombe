@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { resizeImage } from '../../lib/media.js'
+import { resizeImage, uploadVideo, VIDEO_MAX_MB, videoInfo, videoThumb } from '../../lib/media.js'
 
 const blank = (fields) => Object.fromEntries(fields.map((f) => [f.key, f.type === 'number' ? 0 : '']))
 
@@ -44,7 +44,47 @@ export function ImageInput({ value, onChange, multiple = false, max = 6, side = 
   )
 }
 
-export function Field({ def, value, onChange }) {
+/** A video link box plus an "Upload a video file" button. Uploading also sets the cover picture (thumbKey). */
+function VideoInput({ def, value, onChange, patch }) {
+  const [pct, setPct] = useState(-1)
+  const [err, setErr] = useState('')
+  const uploaded = videoInfo(value || '').kind === 'file'
+
+  async function pick(e) {
+    const file = e.target.files[0]
+    e.target.value = ''
+    if (!file) return
+    setErr('')
+    setPct(0)
+    try {
+      const [url, thumb] = await Promise.all([uploadVideo(file, setPct), videoThumb(file)])
+      if (patch && def.thumbKey) patch({ [def.key]: url, [def.thumbKey]: thumb })
+      else onChange(url)
+    } catch (ex) {
+      setErr(ex.message)
+    }
+    setPct(-1)
+  }
+
+  return (
+    <div className="adm-stack">
+      <input type="url" placeholder="Paste a YouTube, Google Drive, Facebook or TikTok link" value={uploaded ? '' : value ?? ''} onChange={(e) => onChange(e.target.value)} disabled={pct >= 0} />
+      <div className="adm-actions">
+        <label className={`adm-btn ghost ${pct >= 0 ? 'is-busy' : ''}`}>
+          {pct >= 0 ? `Uploading… ${pct}%` : uploaded ? 'Replace with another video file' : 'Or upload a video file'}
+          <input type="file" accept="video/mp4,video/quicktime,video/webm,.mp4,.mov,.m4v,.webm" hidden onChange={pick} disabled={pct >= 0} />
+        </label>
+        {uploaded && pct < 0 && <button type="button" className="adm-link danger" onClick={() => (patch && def.thumbKey ? patch({ [def.key]: '', [def.thumbKey]: '' }) : onChange(''))}>Remove video</button>}
+      </div>
+      {pct >= 0 && <progress max="100" value={pct} className="adm-progress" />}
+      {uploaded && pct < 0 && <video src={value} controls preload="metadata" className="adm-video" />}
+      <small>Uploads: MP4, MOV or WebM, up to {VIDEO_MAX_MB} MB. Longer videos are better on YouTube, then paste the link.</small>
+      {err && <p className="adm-alert">{err}</p>}
+    </div>
+  )
+}
+
+export function Field({ def, value, onChange, patch }) {
   const { type = 'text', label, options, hint } = def
   const wrap = (control) => (
     <div className={`adm-field ${def.wide ? 'wide' : ''}`}>
@@ -63,6 +103,7 @@ export function Field({ def, value, onChange }) {
     )
   if (type === 'number') return wrap(<input type="number" min="0" value={value ?? 0} onChange={(e) => onChange(e.target.value === '' ? 0 : Number(e.target.value))} />)
   if (type === 'image') return wrap(<ImageInput value={value} onChange={onChange} side={def.side || 1000} />)
+  if (type === 'video') return wrap(<VideoInput def={def} value={value} onChange={onChange} patch={patch} />)
   if (type === 'images') return wrap(<ImageInput value={value} onChange={onChange} multiple max={def.max || 6} />)
   if (type === 'strings') return wrap(<StringList value={value} onChange={onChange} long={def.long} />)
   if (type === 'list') return wrap(<ObjectList def={def} value={value} onChange={onChange} />)

@@ -177,7 +177,9 @@ export default function Home() {
               <Link to="/gallery" className="link-arrow">All videos <span>→</span></Link>
             </Reveal>
             <Reveal variant="scale" className="video-feature">
-              {vid.embed ? (
+              {vid.file ? (
+                <video src={vid.file} poster={video.thumb || undefined} controls preload="metadata" playsInline />
+              ) : vid.embed ? (
                 <iframe src={vid.embed} title={video.title || 'Video'} loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture" allowFullScreen />
               ) : (
                 <a href={video.url} target="_blank" rel="noreferrer" className="video-link">
@@ -186,7 +188,7 @@ export default function Home() {
                 </a>
               )}
             </Reveal>
-            {video.title && vid.embed && <p className="video-cap">{video.title}</p>}
+            {video.title && (vid.embed || vid.file) && <p className="video-cap">{video.title}</p>}
           </div>
         </section>
       )}
