@@ -41,7 +41,7 @@ export default function Portrait({ className = '', parallax = true, eager = fals
       {badge && (
         <svg className="spin-badge" viewBox="0 0 200 200" aria-hidden="true">
           <defs><path id="circ" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" /></defs>
-          <circle cx="100" cy="100" r="98" fill="#f4b23e" />
+          <circle cx="100" cy="100" r="98" style={{ fill: 'var(--gold)' }} />
           <text><textPath href="#circ" startOffset="0">Gender equality · Affirmative action · Women&apos;s empowerment · </textPath></text>
           <text x="100" y="116" textAnchor="middle" className="spin-mid">PS</text>
         </svg>

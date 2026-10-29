@@ -35,3 +35,6 @@ npm run build
 npx wrangler deploy
 ```
 `wrangler.jsonc` serves `dist/` with single-page-app fallback, so `/about`, `/admin` etc. work on refresh.
+
+## Colours
+Dashboard, **Colours**: pick a ready-made scheme or set five colours (main, accent, highlight, gold, background). They are saved to Firestore (`site/theme`) and every other shade on the site is mixed from them in `src/styles/global.css`. The defaults live in `src/lib/theme.js`.

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { defaults } from '../data/content.js'
 import { getDb } from './firebase.js'
+import { rememberTheme } from './theme.js'
 import { ContentContext } from './useContent.js'
 
 const nonEmpty = (v) => (Array.isArray(v) ? v.length > 0 : v !== undefined && v !== null && v !== '')
@@ -31,6 +32,7 @@ export function ContentProvider({ children }) {
         )
         const list = (snap) => snap.docs.map((d) => ({ id: d.id, ...d.data() }))
         const docs = Object.fromEntries(site.docs.map((d) => [d.id, d.data()]))
+        if (alive && docs.theme) rememberTheme(docs.theme)
         if (alive) setRemote({ docs, projects: list(projects), awards: list(awards), press: list(press), events: list(events), gallery: list(gallery) })
       } catch (err) {
         console.warn('Could not load content from Firebase; showing built-in content.', err)

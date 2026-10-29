@@ -4,6 +4,7 @@ import { firebaseReady, getAuthKit, getDb } from '../../lib/firebase.js'
 import CollectionEditor from './CollectionEditor.jsx'
 import DocEditor from './DocEditor.jsx'
 import Messages from './Messages.jsx'
+import ThemeEditor from './ThemeEditor.jsx'
 import {
   awardsConfig, contactDefaults, contactFields, eventsConfig, galleryConfig, mandateDefaults, mandateFields,
   pressConfig, profileDefaults, profileFields, projectsConfig,
@@ -20,6 +21,7 @@ const NAV = [
   ['gallery', 'Gallery'],
   ['messages', 'Messages'],
   ['contact', 'Contact and social links'],
+  ['colours', 'Colours'],
 ]
 
 function authMessage(code = '') {
@@ -176,6 +178,9 @@ export default function AdminApp() {
       break
     case 'gallery':
       body = <CollectionEditor {...galleryConfig} />
+      break
+    case 'colours':
+      body = <ThemeEditor />
       break
     case 'messages':
       body = <Messages onCount={setUnread} />
