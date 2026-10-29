@@ -16,6 +16,14 @@ export const defaults = {
     ministry: 'Ministry of Gender, Culture, the Arts and Heritage',
     intro:
       'A human resource professional and educationist with more than three decades of experience in business development and capacity building, now leading Kenya’s work on gender equality, women’s empowerment and affirmative action.',
+    headline:
+      "As Principal Secretary for Gender and Affirmative Action, Anne Wang'ombe leads Kenya's work to end gender-based violence, open doors for women in business and leadership, and widen opportunity for marginalised communities. She brings more than thirty years in human resources and education to the role, from teaching in classrooms and lecture halls to senior posts at KEMRI and the KRA Staff Pension Scheme.",
+    facts: [
+      { label: 'Current office', value: 'Principal Secretary, State Department for Gender and Affirmative Action' },
+      { label: 'Ministry', value: 'Gender, Culture, the Arts and Heritage' },
+      { label: 'Background', value: 'Human resources and education, 30+ years' },
+      { label: 'Based in', value: 'Nairobi, Kenya' },
+    ],
     bio: [
       "Anne Wang'ombe is the Principal Secretary of the State Department for Gender and Affirmative Action in Kenya's Ministry of Gender, Culture, the Arts and Heritage. She oversees policies and programmes that promote gender equity, women's empowerment and affirmative action for disadvantaged groups.",
       'She is a professional human resource manager and educationist, passionate about talent management, coaching and nurturing teamwork. Her career spans the Kenya Revenue Authority Staff Pension Scheme, the Kenya Medical Research Institute and a number of universities and teachers colleges, and she describes a deep commitment to advancing the rights of marginalised communities.',

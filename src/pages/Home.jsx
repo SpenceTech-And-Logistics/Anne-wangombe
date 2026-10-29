@@ -2,34 +2,46 @@ import { Link } from 'react-router-dom'
 import { CountUp, Reveal } from '../components/Reveal.jsx'
 import Marquee from '../components/Marquee.jsx'
 import Portrait from '../components/Portrait.jsx'
-import { formatDate } from '../lib/media.js'
+import { formatDate, videoInfo } from '../lib/media.js'
 import { useContent } from '../lib/useContent.js'
 
+const shortDept = (d = '') => d.replace(/^State Department for /i, '')
+
 export default function Home() {
-  const { profile, mandate, contact, press, projects, awards } = useContent()
+  const { profile, mandate, contact, press, projects, awards, gallery } = useContent()
   const top = awards[0]
+  const facts = (profile.facts || []).filter((f) => f.label && f.value)
+  const career = (profile.positions || []).slice(0, 4)
+  const video = gallery.find((g) => g.type === 'video' && g.url)
+  const vid = video ? videoInfo(video.url) : null
 
   return (
     <>
-      <section className="hero">
-        <div className="blob b1" aria-hidden="true" /><div className="blob b2" aria-hidden="true" /><div className="blob b3" aria-hidden="true" />
+      {/* Hero: who she is first, then what she does */}
+      <section className="hero hero-profile">
+        <div className="blob b1" aria-hidden="true" /><div className="blob b2" aria-hidden="true" />
         <div className="wrap hero-in">
           <div>
+            <p className="eyebrow rise" style={{ '--d': '0ms' }}>
+              {[profile.role, shortDept(profile.department)].filter(Boolean).join(' · ')}
+            </p>
             <h1 className="rise" style={{ '--d': '120ms' }}>
               {profile.firstName}
               <br />
               <span className="ul">{profile.lastName}</span>
             </h1>
-            <p className="lead rise" style={{ '--d': '260ms' }}>
-              <strong className="lead-post">{[profile.role, profile.department].filter(Boolean).join(', ')}</strong>
-              {profile.ministry ? `, ${profile.ministry}. ` : '. '}
-              {profile.intro}
-            </p>
+            <p className="lead lead-serif rise" style={{ '--d': '260ms' }}>{profile.headline || profile.intro}</p>
             <div className="hero-actions rise" style={{ '--d': '380ms' }}>
-              <Link to="/mandate" className="btn btn-solid">Our mandate <span className="arr">→</span></Link>
-              <Link to="/about" className="btn btn-ghost">About the PS</Link>
-              {contact.helpline && <span className="help-pill"><i /> GBV helpline <b>{contact.helpline}</b></span>}
+              <Link to="/about" className="btn btn-solid">Read her story <span className="arr">→</span></Link>
+              <Link to="/projects" className="btn btn-ghost">See her work</Link>
             </div>
+            {facts.length > 0 && (
+              <dl className="facts rise" style={{ '--d': '480ms' }}>
+                {facts.map((f) => (
+                  <div key={f.label}><dt>{f.label}</dt><dd>{f.value}</dd></div>
+                ))}
+              </dl>
+            )}
           </div>
           <div className="rise" style={{ '--d': '300ms', position: 'relative' }}>
             <Portrait eager badge />
@@ -43,10 +55,8 @@ export default function Home() {
         </div>
       </section>
 
-      <Marquee items={profile.interests} />
-
-      <section className="wrap section-tight" aria-label="Key figures">
-        <div className="stats">
+      <section className="wrap" aria-label="Key figures">
+        <div className="stats stats-line">
           {profile.stats.map((s, i) => (
             <Reveal key={s.label} className="stat" delay={i * 110}>
               <b><CountUp to={Number(s.value) || 0} />{s.suffix}</b>
@@ -56,52 +66,15 @@ export default function Home() {
         </div>
       </section>
 
+      <Marquee items={profile.interests} />
+
+      {/* Her story */}
       <section className="wrap section">
-        <Reveal className="section-head">
-          <div><span className="chip-label">Mandate</span><h2 className="title">Five priorities, <em>one</em> promise</h2></div>
-          <Link to="/mandate" className="link-arrow">The full mandate <span>→</span></Link>
-        </Reveal>
-        <div className="pri">
-          {mandate.priorities.map((p, i) => (
-            <Reveal key={p.title} className="pri-card" delay={i * 90}>
-              <h3>{p.title}</h3>
-              <p>{p.text}</p>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      <section className="wrap section-tight">
-        <Reveal variant="scale" className="quote-band">
-          <div className="blob b1" aria-hidden="true" />
-          <blockquote>
-            <p>{mandate.vision}</p>
-            <cite>{mandate.visionSource}</cite>
-          </blockquote>
-        </Reveal>
-      </section>
-
-      <section className="wrap section">
-        <Reveal className="section-head">
-          <div><span className="chip-label">Initiatives</span><h2 className="title">What the Department is <em>doing</em></h2></div>
-        </Reveal>
-        <div className="snap" tabIndex={0} aria-label="Initiatives, scroll sideways">
-          {mandate.initiatives.map((n) => (
-            <div className="init" key={n.title}>
-              <span className="tag">{n.tag}</span>
-              <h3>{n.title}</h3>
-              <p>{n.text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="wrap section-tight">
         <div className="split">
           <Reveal variant="left"><Portrait parallax={false} variant="homeAbout" /></Reveal>
           <Reveal variant="right" className="prose">
-            <span className="chip-label">About</span>
-            <h2 className="title" style={{ margin: '14px 0 20px' }}>From the classroom to the <em>Cabinet table</em></h2>
+            <p className="eyebrow">Her story</p>
+            <h2 className="title" style={{ margin: '10px 0 20px' }}>From the classroom to the <em>Cabinet table</em></h2>
             <p>{profile.bio[0]}</p>
             <p style={{ marginBottom: 26 }}>{profile.bio[1]}</p>
             <Link to="/about" className="btn btn-solid">Read the full profile <span className="arr">→</span></Link>
@@ -109,10 +82,34 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Career path */}
+      {career.length > 0 && (
+        <section className="tint section">
+          <div className="wrap path-wrap">
+            <Reveal className="path-intro">
+              <p className="eyebrow">Career</p>
+              <h2 className="title">A path built on <em>people</em></h2>
+              <p className="muted">Three decades in human resources and education, across schools, universities, research and public finance, before taking up public office.</p>
+              <Link to="/about" className="link-arrow">Positions and education <span>→</span></Link>
+            </Reveal>
+            <ol className="path">
+              {career.map((c, i) => (
+                <Reveal as="li" key={c.title} delay={i * 90} className={i === 0 ? 'is-now' : ''}>
+                  <span className="when">{c.when || 'Earlier'}</span>
+                  <h3>{c.title}</h3>
+                  {c.detail && <p>{c.detail}</p>}
+                </Reveal>
+              ))}
+            </ol>
+          </div>
+        </section>
+      )}
+
+      {/* Her work */}
       {projects.length > 0 && (
         <section className="wrap section">
           <Reveal className="section-head">
-            <div><span className="chip-label">Projects</span><h2 className="title">On the ground</h2></div>
+            <div><p className="eyebrow">Her work</p><h2 className="title">On the <em>ground</em></h2></div>
             <Link to="/projects" className="link-arrow">All projects <span>→</span></Link>
           </Reveal>
           <div className="grid grid-3">
@@ -128,9 +125,73 @@ export default function Home() {
         </section>
       )}
 
+      {/* Causes */}
       <section className="wrap section">
         <Reveal className="section-head">
-          <div><span className="chip-label">News</span><h2 className="title">In the <em>headlines</em></h2></div>
+          <div><p className="eyebrow">What she champions</p><h2 className="title">Five causes, <em>one</em> promise</h2></div>
+          <Link to="/mandate" className="link-arrow">Her mandate <span>→</span></Link>
+        </Reveal>
+        <div className="pri">
+          {mandate.priorities.map((p, i) => (
+            <Reveal key={p.title} className="pri-card" delay={i * 90}>
+              <h3>{p.title}</h3>
+              <p>{p.text}</p>
+            </Reveal>
+          ))}
+        </div>
+        {contact.helpline && (
+          <Reveal className="help-line">
+            <span className="help-pill"><i /> GBV helpline <b>{contact.helpline}</b></span>
+            <span className="muted">Toll-free, any time of day. If you or someone you know is at risk, call.</span>
+          </Reveal>
+        )}
+      </section>
+
+      {/* Recognition */}
+      {awards.length > 0 && (
+        <section className="wrap section-tight">
+          <Reveal className="section-head">
+            <div><p className="eyebrow">Recognition</p><h2 className="title">Honours and <em>rankings</em></h2></div>
+            <Link to="/awards" className="link-arrow">All awards <span>→</span></Link>
+          </Reveal>
+          <div className="honours">
+            {awards.slice(0, 3).map((a, i) => (
+              <Reveal key={a.id || a.title} className="honour" delay={i * 100}>
+                <b>{a.year}</b>
+                <div><h3>{a.title}</h3><span className="meta">{a.body}</span></div>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Video, only when the gallery has one */}
+      {video && (
+        <section className="tint section">
+          <div className="wrap">
+            <Reveal className="section-head">
+              <div><p className="eyebrow">Watch</p><h2 className="title">In her <em>own words</em></h2></div>
+              <Link to="/gallery" className="link-arrow">All videos <span>→</span></Link>
+            </Reveal>
+            <Reveal variant="scale" className="video-feature">
+              {vid.embed ? (
+                <iframe src={vid.embed} title={video.title || 'Video'} loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture" allowFullScreen />
+              ) : (
+                <a href={video.url} target="_blank" rel="noreferrer" className="video-link">
+                  <span className="play" aria-hidden="true">▶</span>
+                  <span>{video.title || 'Watch the video'}</span>
+                </a>
+              )}
+            </Reveal>
+            {video.title && vid.embed && <p className="video-cap">{video.title}</p>}
+          </div>
+        </section>
+      )}
+
+      {/* News */}
+      <section className="wrap section">
+        <Reveal className="section-head">
+          <div><p className="eyebrow">In the news</p><h2 className="title">Latest <em>headlines</em></h2></div>
           <Link to="/news" className="link-arrow">News and events <span>→</span></Link>
         </Reveal>
         <div className="grid grid-3">
@@ -147,8 +208,8 @@ export default function Home() {
 
       <section className="wrap">
         <Reveal variant="scale" className="cta">
-          <div><h2>Write to the office of the Principal Secretary</h2><p>Partnerships, invitations, media requests or concerns about gender equality in your community.</p></div>
-          <Link to="/contact" className="btn btn-gold">Get in touch <span className="arr">→</span></Link>
+          <div><h2>Media, partnership and speaking invitations are welcome.</h2><p>Write to her office and a member of the team will respond.</p></div>
+          <Link to="/contact" className="btn btn-gold">Contact the office <span className="arr">→</span></Link>
         </Reveal>
       </section>
     </>

@@ -23,7 +23,7 @@ export default function Navbar() {
       <div className="bar-in">
         <Link to="/" className="brand" onClick={close} aria-label="PS Anne Wang'ombe, home">
           <span className="seal">AW</span>
-          <span className="brand-name">PS Anne Wang&apos;ombe</span>
+          <span className="brand-name">Anne Wang&apos;ombe</span>
         </Link>
         <nav className="nav" id="main-nav" aria-label="Main">
           {links.map(([to, label]) => (

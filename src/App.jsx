@@ -35,8 +35,8 @@ function Layout() {
     window.scrollTo(0, 0)
     const section = TITLES[pathname] || (pathname.startsWith('/projects/') ? 'Project' : '')
     document.title = section
-      ? `${section} | PS Anne Wang'ombe`
-      : "PS Anne Wang'ombe | State Department for Gender and Affirmative Action"
+      ? `${section} | Anne Wang'ombe`
+      : "Anne Wang'ombe | Principal Secretary, Gender and Affirmative Action"
   }, [pathname])
 
   useScroll((y) => {
