@@ -2,7 +2,7 @@
 // Firebase: paste the four values from Firebase console -> Project settings -> Your apps (web).
 // Leave them empty and the site still works with its built-in content (the admin dashboard stays off).
 export const siteConfig = {
-  siteUrl: "", // e.g. "https://www.example.com" once there is a domain
+  siteUrl: "https://ps-anne-wangombe.spencetechandlogistics.workers.dev", // the live address, no trailing slash. Change it when a custom domain is added, then redeploy.
   firebase: {
     apiKey: "AIzaSyDBqDyJkeGD7VBcT2BHHvMFZKNzLPrLT-o",
     authDomain: "ps-anne-wang-ombe.firebaseapp.com",

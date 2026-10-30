@@ -10,6 +10,7 @@ import {
   pressConfig, profileDefaults, profileFields, projectsConfig,
 } from './sections.js'
 import '../../styles/admin.css'
+import { applySeo } from '../../lib/seo.js'
 
 const NAV = [
   ['profile', 'Profile and career'],
@@ -86,9 +87,11 @@ export default function AdminApp() {
   const [user, setUser] = useState(null)
   const [unread, setUnread] = useState(0)
 
+  // Keep the dashboard out of search results.
+  useEffect(() => applySeo({ title: "Dashboard | PS Anne Wang'ombe", description: 'Site dashboard.', path: '/admin', noindex: true }), [])
+
   useEffect(() => {
     if (!firebaseReady) return
-    document.title = "Dashboard | PS Anne Wang'ombe"
     let off = () => {}
     let alive = true
     ;(async () => {

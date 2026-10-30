@@ -2,7 +2,9 @@ import { lazy, Suspense, useEffect, useRef } from 'react'
 import { Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import Footer from './components/Footer.jsx'
 import Navbar from './components/Navbar.jsx'
+import { HOME_DESC, pageSeo, SITE_NAME } from './data/seo.js'
 import { useScroll } from './lib/hooks.js'
+import { applySeo } from './lib/seo.js'
 import About from './pages/About.jsx'
 import Contact from './pages/Contact.jsx'
 import Gallery from './pages/Gallery.jsx'
@@ -17,26 +19,16 @@ import Projects from './pages/Projects.jsx'
 // The dashboard (and Firebase Auth) is only downloaded when someone opens /admin.
 const AdminApp = lazy(() => import('./pages/admin/AdminApp.jsx'))
 
-const TITLES = {
-  '/about': 'About',
-  '/mandate': 'Mandate',
-  '/awards': 'Awards',
-  '/projects': 'Projects',
-  '/news': 'News and events',
-  '/gallery': 'Gallery',
-  '/contact': 'Contact',
-}
-
 function Layout() {
   const { pathname } = useLocation()
   const bar = useRef(null)
 
   useEffect(() => {
     window.scrollTo(0, 0)
-    const section = TITLES[pathname] || (pathname.startsWith('/projects/') ? 'Project' : '')
-    document.title = section
-      ? `${section} | Anne Wang'ombe`
-      : "Anne Wang'ombe | Principal Secretary, Gender and Affirmative Action"
+    // Project pages set their own tags once the project has loaded (ProjectDetail.jsx).
+    if (pathname.startsWith('/projects/')) return
+    const seo = pageSeo(pathname)
+    applySeo(seo ? { ...seo, path: pathname } : { title: `Page not found | ${SITE_NAME}`, description: HOME_DESC, path: pathname, noindex: true })
   }, [pathname])
 
   useScroll((y) => {

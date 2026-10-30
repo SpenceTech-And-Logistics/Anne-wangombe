@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import Lightbox from '../components/Lightbox.jsx'
 import { Reveal } from '../components/Reveal.jsx'
 import { money } from '../lib/media.js'
 import { useContent } from '../lib/useContent.js'
 import NotFound from './NotFound.jsx'
+import { HOME_DESC, pageSeo, SITE_NAME } from '../data/seo.js'
+import { applySeo } from '../lib/seo.js'
 
 export default function ProjectDetail() {
   const { id } = useParams()
@@ -14,6 +16,11 @@ export default function ProjectDetail() {
   const photos = (project?.photos || []).map((src) => ({ src, title: project?.title }))
   const move = (d) => setOpen((i) => (i < 0 ? i : (i + d + photos.length) % photos.length))
   const close = () => setOpen(-1)
+
+  useEffect(() => {
+    const path = `/projects/${id}`
+    applySeo(project ? { ...pageSeo(path, project), path } : { title: `Project not found | ${SITE_NAME}`, description: HOME_DESC, path, noindex: true })
+  }, [id, project])
 
   if (!project) return <NotFound />
   const facts = [
